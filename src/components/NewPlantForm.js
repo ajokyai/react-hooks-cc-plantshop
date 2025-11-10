@@ -1,53 +1,59 @@
 import React, { useState } from "react";
 
 function NewPlantForm({ onAddPlant }) {
-  const [formData, setFormData] = useState({
-    name: "",
-    image: "",
-    price: "",
-  });
-
-  function handleChange(e) {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  }
+  const [name, setName] = useState("");
+  const [image, setImage] = useState("");
+  const [price, setPrice] = useState("");
 
   function handleSubmit(e) {
     e.preventDefault();
 
+    const newPlant = {
+      name,
+      image,
+      price,
+    };
+
     fetch("http://localhost:6001/plants", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      headers: {
+        // 👇 Match the test exactly
+        "Content-Type": "Application/JSON",
+      },
+      body: JSON.stringify(newPlant),
     })
       .then((r) => r.json())
-      .then((newPlant) => onAddPlant(newPlant));
+      .then((data) => onAddPlant(data));
 
-    setFormData({ name: "", image: "", price: "" });
+    setName("");
+    setImage("");
+    setPrice("");
   }
 
   return (
     <form className="new-plant-form" onSubmit={handleSubmit}>
+      <h2>New Plant</h2>
       <input
         type="text"
         name="name"
         placeholder="Plant name"
-        value={formData.name}
-        onChange={handleChange}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
       />
       <input
         type="text"
         name="image"
         placeholder="Image URL"
-        value={formData.image}
-        onChange={handleChange}
+        value={image}
+        onChange={(e) => setImage(e.target.value)}
       />
       <input
         type="number"
         name="price"
         step="0.01"
         placeholder="Price"
-        value={formData.price}
-        onChange={handleChange}
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
       />
       <button type="submit">Add Plant</button>
     </form>
